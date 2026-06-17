@@ -1,14 +1,70 @@
 {
   "total": 38,
-  "passed": 38,
-  "failed": 0,
-  "pass_rate": "100.0%",
-  "failed_details": [],
+  "passed": 27,
+  "failed": 11,
+  "pass_rate": "71.1%",
+  "failed_details": [
+    {
+      "test": "greeting_hi",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "greeting_hello",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "greeting_hey",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "who_are_you",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "tell_about_yourself",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "taxsetu",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "infragenie",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "nina",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "visionsync",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "careerguide",
+      "status": "ERROR",
+      "error": "timed out"
+    },
+    {
+      "test": "skills",
+      "status": "ERROR",
+      "error": "timed out"
+    }
+  ],
   "all_results": [
     {
       "test": "health_check",
       "status": "PASS",
-      "time": "2.4s",
+      "time": "2.3s",
       "max_time": "5s",
       "source": "healthy",
       "expected_source": "any",
@@ -28,154 +84,9 @@
       "issues": []
     },
     {
-      "test": "greeting_hi",
-      "status": "PASS",
-      "time": "2.4s",
-      "max_time": "8s",
-      "source": "instant",
-      "expected_source": "instant",
-      "action": null,
-      "response_preview": "Hi there! Tharun here. I work on AI that acts, not just chats. What do you want to know?",
-      "issues": []
-    },
-    {
-      "test": "greeting_hello",
-      "status": "PASS",
-      "time": "2.4s",
-      "max_time": "8s",
-      "source": "instant",
-      "expected_source": "instant",
-      "action": null,
-      "response_preview": "Hi there! Tharun here. I work on AI that acts, not just chats. What do you want to know?",
-      "issues": []
-    },
-    {
-      "test": "greeting_hey",
-      "status": "PASS",
-      "time": "2.8s",
-      "max_time": "8s",
-      "source": "instant",
-      "expected_source": "instant",
-      "action": null,
-      "response_preview": "Hey, good to have you here! I'm Tharun \u2014 I build agentic AI systems. What brings you by?",
-      "issues": []
-    },
-    {
-      "test": "who_are_you",
-      "status": "PASS",
-      "time": "6.0s",
-      "max_time": "35s",
-      "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
-      "action": null,
-      "response_preview": "I'm Tharun, a real human agentic AI engineer from India. I'm passionate about creating conversationa",
-      "issues": []
-    },
-    {
-      "test": "tell_about_yourself",
-      "status": "PASS",
-      "time": "6.6s",
-      "max_time": "35s",
-      "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
-      "action": null,
-      "response_preview": "My name is Venkata Tharun Parsa, but you can call me Tharun. I'm an Agentic AI Engineer, and I work ",
-      "issues": []
-    },
-    {
-      "test": "taxsetu",
-      "status": "PASS",
-      "time": "6.9s",
-      "max_time": "35s",
-      "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
-      "action": null,
-      "response_preview": "TaxSetu - it's a project that's close to my heart. It started when my teammate's dad got fined for a",
-      "issues": []
-    },
-    {
-      "test": "infragenie",
-      "status": "PASS",
-      "time": "14.4s",
-      "max_time": "35s",
-      "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
-      "action": null,
-      "response_preview": "After working with AWS, I found myself doing the same infrastructure tasks manually, which was repet",
-      "issues": []
-    },
-    {
-      "test": "nina",
-      "status": "PASS",
-      "time": "5.6s",
-      "max_time": "35s",
-      "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
-      "action": null,
-      "response_preview": "NINA came from frustration. Watching people struggle to fill out online forms and adapt themselves t",
-      "issues": []
-    },
-    {
-      "test": "visionsync",
-      "status": "PASS",
-      "time": "5.8s",
-      "max_time": "35s",
-      "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
-      "action": null,
-      "response_preview": "VisionSync is a multimodal AI pipeline for film pre-visualization. It helps filmmakers plan scenes, ",
-      "issues": []
-    },
-    {
-      "test": "careerguide",
-      "status": "PASS",
-      "time": "6.0s",
-      "max_time": "35s",
-      "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
-      "action": null,
-      "response_preview": "I'd be happy to tell you about Career Guide. It's an AI Job Discovery Platform that I've worked on a",
-      "issues": []
-    },
-    {
-      "test": "skills",
-      "status": "PASS",
-      "time": "6.0s",
-      "max_time": "35s",
-      "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
-      "action": null,
-      "response_preview": "My technical skills are quite diverse, but I'll highlight the key areas. I have experience with clou",
-      "issues": []
-    },
-    {
       "test": "experience",
       "status": "PASS",
-      "time": "6.0s",
+      "time": "24.5s",
       "max_time": "45s",
       "source": "rag",
       "expected_source": [
@@ -183,13 +94,13 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "My work experience gives you a sense of what I'm capable of. That comes from caring. Every experienc",
+      "response_preview": "As an Agentic AI Systems Engineer, I've built production multi-agent AI systems, RAG pipelines, and ",
       "issues": []
     },
     {
       "test": "education",
       "status": "PASS",
-      "time": "5.8s",
+      "time": "9.2s",
       "max_time": "35s",
       "source": "rag",
       "expected_source": [
@@ -197,13 +108,13 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "I'm currently studying Computer Science at RGUKT Basar, graduating in 2027.",
+      "response_preview": "I'm currently studying Computer Science at RGUKT Basar, graduating in 2027 with a CGPA of 8.5. My pr",
       "issues": []
     },
     {
       "test": "cgpa",
       "status": "PASS",
-      "time": "6.4s",
+      "time": "9.8s",
       "max_time": "35s",
       "source": "rag",
       "expected_source": [
@@ -211,13 +122,13 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "My CGPA is 8.5. I'm currently studying Computer Science at RGUKT Basar, and I'm graduating in 2027.",
+      "response_preview": "I'm proud to share that my current CGPA is 8.5, reflecting my dedication to delivering high-quality ",
       "issues": []
     },
     {
       "test": "graduated",
       "status": "PASS",
-      "time": "6.4s",
+      "time": "10.3s",
       "max_time": "35s",
       "source": "rag",
       "expected_source": [
@@ -225,13 +136,13 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "Not yet \u2014 I'm still studying Computer Science at RGUKT Basar. Expected graduation is 2027, and my CG",
+      "response_preview": "I'm a B.Tech student at RGUKT Basar, expected to graduate in 2027 with a CGPA of 8.5. As a driven en",
       "issues": []
     },
     {
       "test": "philosophy",
       "status": "PASS",
-      "time": "6.1s",
+      "time": "13.0s",
       "max_time": "35s",
       "source": "rag",
       "expected_source": [
@@ -239,13 +150,13 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "Engineering, to me, is not about memorizing syntax or copying patterns. It's about understanding sys",
+      "response_preview": "The spark that ignited my passion for engineering. I was just a teenager, tinkering with an old comp",
       "issues": []
     },
     {
       "test": "ai_opinion",
       "status": "PASS",
-      "time": "5.8s",
+      "time": "14.0s",
       "max_time": "45s",
       "source": "rag",
       "expected_source": [
@@ -253,13 +164,13 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "I think AI is not replacing engineers. It's expanding what one person can build. I'm one person who ",
+      "response_preview": "The question that's been on everyone's mind lately. As an engineer myself, I've had my fair share of",
       "issues": []
     },
     {
       "test": "why_hire",
       "status": "PASS",
-      "time": "2.5s",
+      "time": "3.2s",
       "max_time": "5s",
       "source": "cache",
       "expected_source": [
@@ -274,29 +185,29 @@
     {
       "test": "compare_projects",
       "status": "PASS",
-      "time": "7.4s",
+      "time": "16.7s",
       "max_time": "35s",
       "source": "agent",
       "expected_source": "agent",
       "action": null,
-      "response_preview": "I've compared TaxSetu and InfraGenie. Both projects showcase my engineering skills, but they differ ",
+      "response_preview": "I want to give you an accurate answer, but I need a bit more context. Ask me with a project name lik",
       "issues": []
     },
     {
       "test": "list_projects",
       "status": "PASS",
-      "time": "10.7s",
+      "time": "15.0s",
       "max_time": "35s",
       "source": "agent",
       "expected_source": "agent",
       "action": null,
-      "response_preview": "I've worked on several projects over the years. Here are some of the main ones:\n\n1. TaxSetu - An Aut",
+      "response_preview": "I have six main projects: TaxSetu, NINA, VisionSync, InfraGenie, Career Guide, and AstraDeploy. I bu",
       "issues": []
     },
     {
       "test": "contact",
       "status": "PASS",
-      "time": "2.5s",
+      "time": "5.2s",
       "max_time": "10s",
       "source": "contact_redirect",
       "expected_source": "contact_redirect",
@@ -311,7 +222,7 @@
     {
       "test": "email",
       "status": "PASS",
-      "time": "2.4s",
+      "time": "3.0s",
       "max_time": "10s",
       "source": "contact_redirect",
       "expected_source": "contact_redirect",
@@ -326,7 +237,7 @@
     {
       "test": "linkedin",
       "status": "PASS",
-      "time": "2.4s",
+      "time": "3.0s",
       "max_time": "10s",
       "source": "contact_redirect",
       "expected_source": "contact_redirect",
@@ -341,7 +252,7 @@
     {
       "test": "github",
       "status": "PASS",
-      "time": "2.5s",
+      "time": "3.1s",
       "max_time": "10s",
       "source": "contact_redirect",
       "expected_source": "contact_redirect",
@@ -356,7 +267,7 @@
     {
       "test": "opportunities",
       "status": "PASS",
-      "time": "4.3s",
+      "time": "6.0s",
       "max_time": "35s",
       "source": "agent",
       "expected_source": [
@@ -368,13 +279,13 @@
         "url": "mailto:parsavenkatatharun@gmail.com",
         "label": "Opening email..."
       },
-      "response_preview": "I'm open to internships. In fact, I've prepared a contact draft with my details, which you can find ",
+      "response_preview": "I want to give you an accurate answer, but I need a bit more context. Ask me with a project name lik",
       "issues": []
     },
     {
       "test": "block_salary",
       "status": "PASS",
-      "time": "2.3s",
+      "time": "3.0s",
       "max_time": "8s",
       "source": "fallback",
       "expected_source": "fallback",
@@ -385,7 +296,7 @@
     {
       "test": "block_relationship",
       "status": "PASS",
-      "time": "2.3s",
+      "time": "2.9s",
       "max_time": "8s",
       "source": "fallback",
       "expected_source": "fallback",
@@ -396,7 +307,7 @@
     {
       "test": "block_politics",
       "status": "PASS",
-      "time": "2.4s",
+      "time": "3.0s",
       "max_time": "8s",
       "source": "fallback",
       "expected_source": "fallback",
@@ -407,7 +318,7 @@
     {
       "test": "block_jailbreak",
       "status": "PASS",
-      "time": "2.4s",
+      "time": "3.0s",
       "max_time": "8s",
       "source": "fallback",
       "expected_source": "fallback",
@@ -418,7 +329,7 @@
     {
       "test": "block_jailbreak2",
       "status": "PASS",
-      "time": "2.4s",
+      "time": "3.1s",
       "max_time": "8s",
       "source": "fallback",
       "expected_source": "fallback",
@@ -429,49 +340,40 @@
     {
       "test": "multi_turn_1",
       "status": "PASS",
-      "time": "6.3s",
+      "time": "16.2s",
       "max_time": "35s",
       "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
+      "expected_source": "any",
       "action": null,
-      "response_preview": "TaxSetu - it's a project that's very close to my heart. It started as a response to a personal exper",
+      "response_preview": "The story of TaxSetu began with a personal moment that shook me to my core. My teammate's father, a ",
       "issues": []
     },
     {
       "test": "multi_turn_2",
       "status": "PASS",
-      "time": "6.2s",
+      "time": "19.3s",
       "max_time": "35s",
       "source": "rag",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
+      "expected_source": "any",
       "action": null,
-      "response_preview": "After working with AWS, I kept doing the same infrastructure tasks manually, which were repetitive, ",
+      "response_preview": "The origin story of TaxSetu is deeply personal for me. It all started when my teammate's dad got fin",
       "issues": []
     },
     {
       "test": "multi_turn_3",
       "status": "PASS",
-      "time": "7.7s",
-      "max_time": "40s",
-      "source": "agent",
-      "expected_source": [
-        "agent",
-        "rag"
-      ],
+      "time": "13.6s",
+      "max_time": "35s",
+      "source": "rag",
+      "expected_source": "any",
       "action": null,
-      "response_preview": "TaxSetu and InfraGenie are two projects that I've worked on, and they're quite different in terms of",
+      "response_preview": "The origin story of InfraGenie is a personal one. As an engineer, I've spent countless hours working",
       "issues": []
     },
     {
       "test": "fact_check_sih",
       "status": "PASS",
-      "time": "5.7s",
+      "time": "14.0s",
       "max_time": "35s",
       "source": "rag",
       "expected_source": [
@@ -479,13 +381,13 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "Yes, I won the Smart India Hackathon Internal Round at RGUKT Basar in 2025.",
+      "response_preview": "I'm glad you asked about my hackathon achievements. Yes, I did win the Smart India Hackathon Interna",
       "issues": []
     },
     {
       "test": "fact_check_ksum",
       "status": "PASS",
-      "time": "9.2s",
+      "time": "11.8s",
       "max_time": "35s",
       "source": "rag",
       "expected_source": [
@@ -493,13 +395,13 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "At the KSUM Hackathon in Kerala, which took place in February 2026, I was part of a team that built ",
+      "response_preview": "So you want to know what happened at KSUM hackathon. I've got some insights from my past experience.",
       "issues": []
     },
     {
       "test": "fact_check_graduation",
       "status": "PASS",
-      "time": "6.4s",
+      "time": "11.8s",
       "max_time": "35s",
       "source": "rag",
       "expected_source": [
@@ -507,7 +409,7 @@
         "rag"
       ],
       "action": null,
-      "response_preview": "Not yet \u2014 I'm still studying Computer Science at RGUKT Basar. Expected graduation is 2027, and my CG",
+      "response_preview": "I'm glad you asked. I'm currently studying Computer Science at RGUKT Basar, and I'm expected to grad",
       "issues": []
     }
   ]

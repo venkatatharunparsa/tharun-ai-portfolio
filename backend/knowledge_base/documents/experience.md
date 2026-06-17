@@ -60,3 +60,37 @@ I am currently studying Computer Science at RGUKT Basar, graduating in 2027. CGP
 - Internships in AI/ML product teams
 - Collaborations on agentic AI and RAG projects
 - Startup opportunities in the AI space
+
+## Skills Mapped to Projects
+
+This section helps connect Tharun's skills to real work he has shipped.
+
+### LangGraph / Multi-Agent Orchestration
+- **TaxSetu:** Coordinator agent + 5 specialized sub-agents for GST workflows
+- **InfraGenie:** 5-agent system (Orchestrator, Planner, Executor, Monitor, Security)
+- **Career Guide:** Planner → Scraper → Evaluator pipeline
+- **Tharun AI Portfolio:** Verification, intent, RAG, tool, contact agents via LangGraph
+
+### RAG (Retrieval-Augmented Generation)
+- **InfraGenie:** Self-improving RAG with ChromaDB across 6 knowledge collections
+- **VisionSync:** RAG-based visual consistency validation across film scenes
+- **Career Guide:** ChromaDB for intelligent job-opportunity matching
+- **Tharun AI Portfolio:** Supabase pgvector with entity-aware retrieval
+
+### FastAPI / Backend
+- **TaxSetu, NINA, InfraGenie, Career Guide, Tharun AI:** All use FastAPI for production APIs
+- WebSocket streaming in InfraGenie and Tharun AI voice pipeline
+
+### AWS / Cloud
+- **TaxSetu:** AWS deployment
+- **InfraGenie:** Terraform, Docker, AWS infrastructure automation
+- **Career Guide:** 24/7 deployment on AWS EC2 free tier
+- **AstraDeploy:** CI/CD, containerized auto-scalable AWS infrastructure
+
+### Voice AI
+- **NINA:** Voice-to-action browser automation
+- **Tharun AI Portfolio:** Groq Whisper STT, ElevenLabs/Web Speech TTS, real-time voice chat
+
+### Frontend
+- **Tharun AI Portfolio:** Next.js 14, React, TailwindCSS, voice interface
+- **InfraGenie:** React dashboard with real-time WebSocket updates

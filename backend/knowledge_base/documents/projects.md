@@ -1,8 +1,16 @@
 # My Projects
 
+## Flagship Project — TaxSetu
+
+**Tharun's flagship, favorite, and most meaningful project is TaxSetu.**
+
+If someone asks about his "flagship project," "best project," "favorite project," or "most meaningful build" — the answer is always **TaxSetu**. It is an autonomous GST compliance platform built with Surya, Manjeet, and Pavan (PK). It started from a real fine that hit a teammate's father, not from a hackathon brief.
+
+---
+
 ## TaxSetu — Autonomous GST Compliance Platform
 **Stack:** LangGraph, LangChain, Gemini API, FAISS, FastAPI, AWS
-**Type:** Team Project — Tharun, Surya, Manjeet, Bhavan (PK)
+**Type:** Team Project — Tharun, Surya, Manjeet, Pavan (PK)
 **Achievement:** KSUM Hackathon, Kerala Startup Mission, February 2026 — We were the only team from Telangana there.
 
 ### The Real Story
@@ -46,7 +54,7 @@ The hardest problem in film production AI is consistency. If your lead character
 
 ## NINA — Voice-Driven Browser Automation Agent
 **Stack:** Playwright, Python, NLP, FastAPI, DOM Parsing
-**Type:** Team Project — Tharun, Surya, Manjeet, Bhavan (PK)
+**Type:** Team Project — Tharun, Surya, Manjeet, Pavan (PK)
 
 ### The Idea
 Why should humans adapt to websites? Websites should adapt to humans.

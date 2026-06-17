@@ -68,12 +68,15 @@ FOLLOWUP_MAP = {
 
 
 def get_followups(
+    user_query: str,
     response_text: str,
     intent: str | None,
     conversation_history: list,
+    visitor_type: str = "unknown",
 ) -> list[str]:
     """Return 2-3 follow-up questions based on response content and intent."""
-    response_lower = response_text.lower()
+    response_lower = (response_text or "").lower()
+    query_lower = (user_query or "").lower()
     topic = "default"
 
     if any(w in response_lower for w in ["taxsetu", "gst", "compliance", "tax filing"]):
@@ -103,11 +106,42 @@ def get_followups(
 
     candidates = FOLLOWUP_MAP.get(topic, FOLLOWUP_MAP["default"])
 
+    # Visitor-persona aware prompts improve engagement quality.
+    persona_boost = []
+    if visitor_type == "recruiter":
+        persona_boost = [
+            "Would you like my resume and contact details?",
+            "Want a quick walkthrough of my flagship project TaxSetu?",
+            "Should I summarize my role-fit for Agentic AI Engineer positions?",
+        ]
+    elif visitor_type == "collaborator":
+        persona_boost = [
+            "Want to discuss a startup or product idea together?",
+            "Should I break down how I design multi-agent systems for real products?",
+            "Want to explore collaboration options and next steps?",
+        ]
+    elif visitor_type == "student":
+        persona_boost = [
+            "Want a beginner-friendly roadmap to learn agentic AI?",
+            "Should I explain my build-first learning process with examples?",
+            "Want open-source project recommendations from my GitHub?",
+        ]
+    elif visitor_type == "engineer":
+        persona_boost = [
+            "Want a deep dive into my LangGraph orchestration design?",
+            "Should I explain my RAG grounding and fallback strategy?",
+            "Want architecture-level details on TaxSetu or InfraGenie?",
+        ]
+
+    if "flagship" in query_lower or "favorite" in query_lower or "favourite" in query_lower:
+        persona_boost.insert(0, "Want the full TaxSetu architecture breakdown (agents + workflow)?")
+
     asked = {
         msg.get("text", "").lower().strip()
         for msg in conversation_history
         if msg.get("role") == "user"
     }
 
-    filtered = [q for q in candidates if q.lower() not in asked]
+    ordered = persona_boost + candidates
+    filtered = [q for q in ordered if q.lower() not in asked]
     return filtered[:3] if filtered else candidates[:2]

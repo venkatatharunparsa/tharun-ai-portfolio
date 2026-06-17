@@ -57,6 +57,7 @@ class ChatResponse(BaseModel):
     agent_steps: list | None = None
     tools_used: list | None = None
     followup_suggestions: list[str] = []
+    visitor_type: str | None = None
 
 
 @app.get("/")
@@ -95,7 +96,11 @@ async def chat(request: ChatRequest):
         session_id = request.session_id or str(uuid.uuid4())
 
         from core.followups import get_followups
-        from core.visitor_intent import detect_visitor_type, get_proactive_message
+        from core.visitor_intent import (
+            detect_visitor_type,
+            get_proactive_message,
+            should_send_proactive,
+        )
 
         history = request.conversation_history or []
 
@@ -111,9 +116,8 @@ async def chat(request: ChatRequest):
             "at parsavenkatatharun@gmail.com"
         )
 
-        visitor_type = detect_visitor_type(history)
-        turn_count = len(history)
-        if turn_count in (4, 8) and visitor_type != "unknown":
+        visitor_type = detect_visitor_type(history, request.query)
+        if should_send_proactive(history, visitor_type):
             proactive = get_proactive_message(visitor_type)
             if proactive:
                 final_response = f"{final_response}\n\n{proactive}"
@@ -121,9 +125,11 @@ async def chat(request: ChatRequest):
         followups: list[str] = []
         if result.get("response_source") not in ("fallback", "instant"):
             followups = get_followups(
+                user_query=request.query,
                 response_text=final_response,
                 intent=result.get("intent"),
                 conversation_history=history,
+                visitor_type=visitor_type,
             )
 
         return ChatResponse(
@@ -138,6 +144,7 @@ async def chat(request: ChatRequest):
             agent_steps=result.get("agent_steps"),
             tools_used=result.get("tools_used"),
             followup_suggestions=followups,
+            visitor_type=visitor_type,
         )
 
     except Exception as e:

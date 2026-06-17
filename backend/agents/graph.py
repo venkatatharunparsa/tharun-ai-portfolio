@@ -26,6 +26,7 @@ from core.session_memory import (
 )
 from core.persona import normalize_query, enforce_persona, enforce_education_facts, enforce_contact_email
 from core.fast_path import get_fast_path_response, warmup_fast_path_cache
+from tools.knowledge_tools import reset_kb_search_dedup
 
 INSTANT_GREETINGS = {
     "hi", "hey", "hello", "hii", "heyy", "helloo",
@@ -288,6 +289,7 @@ def process_query(
         Final AgentState with response populated
     """
     start = time.time()
+    reset_kb_search_dedup()
 
     fast_response = get_fast_path_response(user_query)
     if fast_response:

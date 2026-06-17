@@ -6,6 +6,7 @@ from agents import AgentState
 from core.embeddings import get_embedding
 from core.generation import generate_text
 from core.persona import enforce_persona, enforce_contact_email
+from core.response_style import get_style_instruction, resolve_visitor_type
 from core.vector_store import search_knowledge
 from config import (
     RAG_SIMILARITY_THRESHOLD,
@@ -29,6 +30,8 @@ YOUR PERSONALITY:
 - Direct, honest, technically strong, warm, confident
 - You share opinions and tell stories, not bullet lists
 - 2-4 sentences for simple questions, more for technical ones
+
+{style_section}
 
 {history_section}
 
@@ -321,7 +324,11 @@ def rag_agent(state: AgentState) -> AgentState:
                 f"using only the knowledge base context.)"
             )
 
+        visitor_type = resolve_visitor_type(conversation_history, original_query)
+        style_section = get_style_instruction(visitor_type)
+
         prompt = RAG_SYSTEM_PROMPT.format(
+            style_section=style_section,
             history_section=history_section,
             context=context,
             question=question_for_prompt,

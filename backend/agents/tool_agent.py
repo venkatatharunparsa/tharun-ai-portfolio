@@ -12,6 +12,7 @@ from core.generation import generate_text
 from core.persona import enforce_persona, has_persona_violation, enforce_education_facts, enforce_contact_email
 from core.contact_actions import detect_action
 from core.provider_keys import get_groq_keys, try_with_keys
+from core.response_style import get_style_instruction, resolve_visitor_type
 from tools.registry import TOOL_SCHEMAS, execute_tool
 
 logger = logging.getLogger(__name__)
@@ -175,6 +176,7 @@ def _synthesize_from_tools(
     user_query: str,
     tool_payloads: list[dict],
     conversation_history: list | None = None,
+    force_grounded: bool = False,
 ) -> str:
     entity_note = ""
     if conversation_history:
@@ -188,14 +190,42 @@ def _synthesize_from_tools(
                     f"Answer about {entity} only — do not switch to another project.\n"
                 )
 
+    grounding_instruction = (
+        "If tool results include knowledge-base chunks, use them directly. "
+        "Do not say 'I don't have info' when chunk_count > 0."
+        if force_grounded
+        else ""
+    )
+
+    visitor_type = resolve_visitor_type(conversation_history, user_query)
+    style_instruction = get_style_instruction(visitor_type)
+
     prompt = (
         "You are Tharun (human engineer). Answer in first person from these tool results only. "
         "Never say chatbot, conversational AI, or assistant."
+        f"{grounding_instruction}\n"
+        f"{style_instruction}\n"
         f"{entity_note}\n\n"
         f"Tool results:\n{json.dumps(tool_payloads, indent=2)[:3000]}\n\n"
         f"Visitor asked: {user_query}\n\nAnswer:"
     )
     return generate_text(prompt, max_tokens=300)
+
+
+def _kb_signal(tool_payloads: list[dict]) -> tuple[int, float]:
+    """Return total KB chunks and best KB similarity from tool payloads."""
+    total_chunks = 0
+    best_score = 0.0
+    for payload in tool_payloads:
+        if payload.get("tool") != "search_knowledge_base":
+            continue
+        result = payload.get("result") or {}
+        data = result.get("data") or {}
+        total_chunks += int(data.get("chunk_count") or 0)
+        score = data.get("best_score")
+        if score is not None:
+            best_score = max(best_score, float(score))
+    return total_chunks, best_score
 
 
 def _execute_tool_batch(
@@ -240,15 +270,49 @@ def _run_direct_tools(
     steps: list = []
     tools_used: list = []
     _append_step(steps, "plan", f"Direct dispatch: {[p[0] for p in planned]}")
+    visitor_type = resolve_visitor_type(conversation_history, user_query)
+    _append_step(steps, "style", f"Response style: {visitor_type}")
 
     payloads, best_score = _execute_tool_batch(
         planned, session_id, conversation_history, steps, tools_used,
     )
 
-    _append_step(steps, "respond", "Synthesizing from direct tool results")
-    text = _synthesize_from_tools(user_query, payloads, conversation_history)
+    kb_chunks, kb_best = _kb_signal(payloads)
+    if kb_chunks == 0:
+        _append_step(steps, "respond", "No KB grounding found, asking for specificity")
+        text = (
+            "I want to give you an accurate answer, but I need a bit more context. "
+            "Ask me with a project name like TaxSetu, InfraGenie, NINA, or VisionSync."
+        )
+    elif kb_best < 0.62:
+        _append_step(steps, "respond", "Weak KB match, requesting clarification")
+        text = (
+            "I found partial context but not enough to answer confidently. "
+            "Can you clarify which project or topic you mean?"
+        )
+    else:
+        _append_step(steps, "respond", "Synthesizing from direct tool results")
+        text = _synthesize_from_tools(
+            user_query,
+            payloads,
+            conversation_history,
+            force_grounded=kb_best >= 0.72,
+        )
+
+        if kb_best >= 0.72 and any(
+            phrase in (text or "").lower()
+            for phrase in ("don't have", "do not have", "not enough info", "not enough context")
+        ):
+            _append_step(steps, "respond", "Regrounding due to contradictory answer")
+            text = _synthesize_from_tools(
+                user_query,
+                payloads,
+                conversation_history,
+                force_grounded=True,
+            )
+
     messages = [{"role": "tool", "content": json.dumps(p)} for p in payloads]
-    return text, steps, tools_used, best_score, messages
+    return text, steps, tools_used, (best_score or kb_best), messages
 
 
 def _groq_with_tools(messages: list, api_key: str):
@@ -279,12 +343,21 @@ def _groq_call_with_recovery(messages: list, groq_keys: list) -> tuple[object | 
     return None, None
 
 
-def _reground_from_tools(user_query: str, messages: list, groq_keys: list) -> str:
+def _reground_from_tools(
+    user_query: str,
+    messages: list,
+    groq_keys: list,
+    conversation_history: list | None = None,
+) -> str:
     """Re-synthesize strictly from tool outputs when persona drifts."""
     tool_data = [m["content"] for m in messages if m.get("role") == "tool"]
+    style_instruction = get_style_instruction(
+        resolve_visitor_type(conversation_history, user_query)
+    )
     prompt = (
         "You are Tharun (human engineer). Answer ONLY from these tool results. "
-        "First person. Never say chatbot, conversational AI, or assistant.\n\n"
+        "First person. Never say chatbot, conversational AI, or assistant.\n"
+        f"{style_instruction}\n\n"
         f"Tool data:\n{chr(10).join(tool_data[-3:])}\n\n"
         f"Question: {user_query}\n\nAnswer:"
     )
@@ -320,8 +393,12 @@ def _run_tool_loop(
             for h in conversation_history[-4:]
         )
 
+    style_instruction = get_style_instruction(
+        resolve_visitor_type(conversation_history, user_query)
+    )
+
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": f"{SYSTEM_PROMPT}\n\n{style_instruction}"},
         {
             "role": "user",
             "content": (
@@ -332,6 +409,8 @@ def _run_tool_loop(
     ]
 
     _append_step(steps, "plan", "Agent deciding which tools to use")
+    visitor_type = resolve_visitor_type(conversation_history, user_query)
+    _append_step(steps, "style", f"Response style: {visitor_type}")
 
     groq_keys = get_groq_keys()
     if not groq_keys:
@@ -429,8 +508,11 @@ def _run_tool_loop(
         break
 
     _append_step(steps, "respond", "Fallback synthesis after tool loop")
+    style_instruction = get_style_instruction(
+        resolve_visitor_type(conversation_history, user_query)
+    )
     synthesis_prompt = (
-        f"{SYSTEM_PROMPT}\n\n"
+        f"{SYSTEM_PROMPT}\n\n{style_instruction}\n\n"
         f"Visitor asked: {user_query}\n"
         f"Tool trace: {json.dumps(steps[-6:])}\n"
         f"Answer as Tharun in first person:"
@@ -452,7 +534,12 @@ def tool_agent(state: AgentState) -> AgentState:
         text = enforce_contact_email(text)
         if has_persona_violation(text) and tools_used:
             text = enforce_persona(
-                _reground_from_tools(state["user_query"], loop_messages, get_groq_keys()),
+                _reground_from_tools(
+                    state["user_query"],
+                    loop_messages,
+                    get_groq_keys(),
+                    state.get("conversation_history") or [],
+                ),
                 state["user_query"],
             )
             text = enforce_education_facts(text, state["user_query"])

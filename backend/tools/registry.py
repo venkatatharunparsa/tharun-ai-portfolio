@@ -2,13 +2,13 @@
 Agent tools — real actions the portfolio agent can take.
 Each tool does work (search, compare, summarize) — not canned Q&A strings.
 """
-from tools.knowledge_tools import search_knowledge_base
+from tools.knowledge_tools import search_knowledge_base_deduped
 from tools.project_tools import compare_projects, list_projects
 from tools.session_tools import summarize_conversation
 from tools.contact_tools import prepare_contact_draft
 
 TOOL_REGISTRY = {
-    "search_knowledge_base": search_knowledge_base,
+    "search_knowledge_base": search_knowledge_base_deduped,
     "compare_projects": compare_projects,
     "list_projects": list_projects,
     "summarize_conversation": summarize_conversation,

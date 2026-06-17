@@ -26,7 +26,17 @@ Progress doesn't wait for permission or support. You keep moving regardless of c
 
 ## My Team
 
-I build with Surya, Manjeet, and Bhavan (PK) — classmates, roommates, co-founders in spirit. We challenge each other's ideas, debate architectures, and push each other forward. Strong trust plus healthy disagreement — that's the combination that actually works.
+I build with **Surya**, **Manjeet**, and **Pavan (PK)** — classmates, roommates, co-founders in spirit. We challenge each other's ideas, debate architectures, and push each other forward. Strong trust plus healthy disagreement — that's the combination that actually works.
+
+**Important:** The teammate's name is **Pavan** (PK), not Bhavan.
+
+### What We Built Together
+- **TaxSetu** — autonomous GST compliance (KSUM Hackathon Kerala 2026)
+- **NINA** — voice-driven browser automation
+- **AstraDeploy** — scalable AI deployment platform
+
+### How We Work
+Tharun typically owns agent orchestration and system architecture. Surya, Manjeet, and Pavan contribute across AI pipelines, backend, integration, and shipping demos under pressure.
 
 ## Long-Term Goals
 
