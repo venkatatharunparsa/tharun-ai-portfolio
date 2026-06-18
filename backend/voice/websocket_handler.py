@@ -15,7 +15,7 @@ from voice.tts import get_tts_response
 
 logger = logging.getLogger(__name__)
 
-MIN_AUDIO_BYTES = 300
+MIN_AUDIO_BYTES = 1000
 RECEIVE_TIMEOUT_SEC = 120.0
 
 WAKE_PREFIXES = [
@@ -146,6 +146,20 @@ async def handle_voice_websocket(websocket: WebSocket) -> None:
                 try:
                     stt_result = transcribe_audio(audio_bytes)
                     transcript = stt_result.get("text", "").strip()
+
+                    if stt_result.get("error") == "hallucination_filtered":
+                        logger.info(
+                            "Session %s: Hallucination filtered, raw was: '%s'",
+                            session_id,
+                            stt_result.get("raw_text"),
+                        )
+                        await websocket.send_json({
+                            "type": "status",
+                            "status": "no_transcript",
+                        })
+                        await asyncio.sleep(0.1)
+                        await _send_connected(websocket, session_id)
+                        continue
 
                     if not transcript:
                         if stt_result.get("error"):

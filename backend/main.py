@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException, WebSocket
 from voice.websocket_handler import handle_voice_websocket
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from config import validate_config, FRONTEND_URL, SENTRY_DSN
+from config import validate_config, SENTRY_DSN
 from core.fast_path import warmup_fast_path_cache
 
 if SENTRY_DSN:
@@ -24,6 +24,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Build allowed origins list explicitly — strip trailing slashes, dedupe
+ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND_URL", "").rstrip("/"),
+    "http://localhost:3000",
+    "https://tharun-ai-portfolio.vercel.app",
+]
+ALLOWED_ORIGINS = list(dict.fromkeys(origin for origin in ALLOWED_ORIGINS if origin))
+print(f"[CORS] Allowed origins: {ALLOWED_ORIGINS}")
+
 
 @app.on_event("startup")
 def on_startup():
@@ -31,7 +40,7 @@ def on_startup():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "http://localhost:3000"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

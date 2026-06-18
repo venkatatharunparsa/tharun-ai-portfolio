@@ -1,6 +1,7 @@
 """
 Speech-to-Text — Groq Whisper.
-Validates audio before sending. Retries once on timeout.
+Filters known hallucination phrases that Whisper produces
+on silent or low-quality audio input.
 """
 import io
 import logging
@@ -13,9 +14,47 @@ from core.provider_keys import get_groq_keys, try_with_keys
 
 logger = logging.getLogger(__name__)
 
-MIN_VALID_AUDIO_BYTES = 300
+MIN_VALID_AUDIO_BYTES = 1000
 MAX_AUDIO_BYTES = 25_000_000
 WEBM_HEADER = b"\x1a\x45\xdf\xa3"
+
+# Known Whisper hallucination phrases on silence/noise
+HALLUCINATION_PHRASES = {
+    "thank you",
+    "thank you.",
+    "thanks for watching",
+    "thanks for watching!",
+    "thank you for watching",
+    "please subscribe",
+    "bye",
+    "bye.",
+    "okay",
+    "ok.",
+    "you",
+    "the",
+    "uh",
+    "um",
+    "hmm",
+    ".",
+    "...",
+}
+
+
+def is_likely_hallucination(text: str, audio_duration: float | None) -> bool:
+    """
+    Detect if transcription is likely a Whisper hallucination
+    rather than real speech.
+    """
+    normalized = text.lower().strip()
+
+    if normalized in HALLUCINATION_PHRASES:
+        return True
+
+    if audio_duration is not None and audio_duration < 1.0:
+        if len(normalized.split()) <= 3:
+            return True
+
+    return False
 
 
 def transcribe_audio(
@@ -23,17 +62,17 @@ def transcribe_audio(
     language: str = "en",
     retry: bool = True,
 ) -> dict:
-    """Transcribe audio bytes using Groq Whisper."""
+    """
+    Transcribe audio bytes using Groq Whisper.
+    Filters hallucinated phrases from silent/short audio.
+    """
     audio_size = len(audio_bytes or b"")
 
     if audio_size < MIN_VALID_AUDIO_BYTES:
         return {
             "text": "",
             "language": language,
-            "error": (
-                f"Audio too small ({audio_size} bytes) "
-                f"— likely empty recording"
-            ),
+            "error": f"Audio too small ({audio_size} bytes)",
         }
 
     if audio_size < 1000 and not audio_bytes.startswith(WEBM_HEADER):
@@ -76,10 +115,28 @@ def transcribe_audio(
                 "error": "All Groq keys failed for STT",
             }
 
+        text = (transcription.text or "").strip()
+        duration = getattr(transcription, "duration", None)
+
+        if is_likely_hallucination(text, duration):
+            logger.info(
+                "[stt] Filtered likely hallucination: '%s' "
+                "(duration=%s, audio_bytes=%s)",
+                text,
+                duration,
+                audio_size,
+            )
+            return {
+                "text": "",
+                "language": language,
+                "error": "hallucination_filtered",
+                "raw_text": text,
+            }
+
         return {
-            "text": (transcription.text or "").strip(),
+            "text": text,
             "language": getattr(transcription, "language", language),
-            "duration": getattr(transcription, "duration", None),
+            "duration": duration,
         }
 
     except Exception as e:

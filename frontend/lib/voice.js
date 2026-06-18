@@ -41,6 +41,10 @@ export class VoiceClient {
     this.pingTimer = null;
     this._connectPromise = null;
     this._intentionalClose = false;
+    this._levelAudioContext = null;
+    this._levelAnalyser = null;
+    this._levelRaf = null;
+    this._totalBytesSent = 0;
 
     this.setCallbacks(callbacks);
   }
@@ -208,6 +212,7 @@ export class VoiceClient {
     this.mediaRecorder = null;
     this.isRecording = false;
     clearTimeout(this.silenceTimer);
+    this._stopAudioLevelMonitor();
 
     this.micStream?.getTracks().forEach((t) => t.stop());
     this.micStream = null;
@@ -218,14 +223,51 @@ export class VoiceClient {
 
     this.micStream = await navigator.mediaDevices.getUserMedia({
       audio: {
-        sampleRate: 16000,
         channelCount: 1,
         echoCancellation: true,
-        noiseSuppression: true,
+        noiseSuppression: false,
         autoGainControl: true,
       },
     });
     return this.micStream;
+  }
+
+  _stopAudioLevelMonitor() {
+    if (this._levelRaf) {
+      cancelAnimationFrame(this._levelRaf);
+      this._levelRaf = null;
+    }
+    this._levelAnalyser = null;
+    if (this._levelAudioContext) {
+      this._levelAudioContext.close().catch(() => {});
+      this._levelAudioContext = null;
+    }
+  }
+
+  _startAudioLevelMonitor(stream) {
+    this._stopAudioLevelMonitor();
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 256;
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      this._levelAudioContext = audioContext;
+      this._levelAnalyser = analyser;
+
+      const checkAudioLevel = () => {
+        if (!this.isRecording || !this._levelAnalyser) return;
+        this._levelAnalyser.getByteFrequencyData(dataArray);
+        const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+        console.log("[audio-level]", avg.toFixed(1));
+        this._levelRaf = requestAnimationFrame(checkAudioLevel);
+      };
+      checkAudioLevel();
+    } catch (err) {
+      console.warn("[audio-level] monitor unavailable:", err);
+    }
   }
 
   async startRecording() {
@@ -237,6 +279,8 @@ export class VoiceClient {
       }
 
       const stream = await this._ensureMicStream();
+      this._startAudioLevelMonitor(stream);
+      this._totalBytesSent = 0;
 
       const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
@@ -246,12 +290,21 @@ export class VoiceClient {
 
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0 && this.ws?.readyState === WebSocket.OPEN) {
+          this._totalBytesSent += event.data.size;
+          console.log(
+            "[audio-chunk]",
+            event.data.size,
+            "total:",
+            this._totalBytesSent,
+          );
           this.ws.send(event.data);
           this._resetSilenceTimer();
         }
       };
 
       this.mediaRecorder.onstop = () => {
+        console.log("[audio-total-sent]", this._totalBytesSent, "bytes");
+        this._stopAudioLevelMonitor();
         this.isRecording = false;
       };
 
